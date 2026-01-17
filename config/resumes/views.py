@@ -1,23 +1,39 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .models import Resume
 from .serializers import ResumeSerializer
+from jobs.models import Job
+
 
 class ResumeUploadView(APIView):
-
     def post(self, request):
-        serializer = ResumeSerializer(data=request.data)
+        job_id = request.data.get('job')
+        job = get_object_or_404(Job, id=job_id)
 
-        if serializer.is_valid():
-            resume = serializer.save()
+        files = request.FILES.getlist('resume_file')
 
-            # 🚀 Celery task will be triggered here later
-            # process_resume.delay(resume.id)
-
+        if not files:
             return Response(
-                ResumeSerializer(resume).data,
-                status=status.HTTP_201_CREATED
+                {"error": "No resume files provided."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        created_resumes = []
+
+        for file in files:
+            serializer = ResumeSerializer(
+                data={
+                    'job': job.id,
+                    'resume_file': file
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            resume = serializer.save()
+            created_resumes.append(resume)
+
+        return Response(
+            ResumeSerializer(created_resumes, many=True).data,
+            status=status.HTTP_201_CREATED
+        )
