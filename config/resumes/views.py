@@ -1,3 +1,4 @@
+from resumes.parsers import get_resume_path, rank_resumes , process_and_score_resume
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,6 +23,7 @@ class ResumeUploadView(APIView):
 
         created_resumes = []
 
+        # 1️⃣ Save only new resumes
         for file in files:
             serializer = ResumeSerializer(
                 data={
@@ -33,7 +35,17 @@ class ResumeUploadView(APIView):
             resume = serializer.save()
             created_resumes.append(resume)
 
-        return Response(
-            ResumeSerializer(created_resumes, many=True).data,
-            status=status.HTTP_201_CREATED
-        )
+        # 2️⃣ Process ONLY new ones
+        results = []
+        for resume in created_resumes:
+            result = process_and_score_resume(resume, job.description)
+            results.append(result)
+
+        # 3️⃣ Rank
+        results.sort(key=lambda x: x['score'], reverse=True)
+
+        return Response({
+            "job_id": job.id,
+            "uploaded_now": len(created_resumes),
+            "rankings": results
+        }, status=status.HTTP_201_CREATED)
