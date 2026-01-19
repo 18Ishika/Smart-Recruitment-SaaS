@@ -7,6 +7,11 @@ class ResumeSerializer(serializers.ModelSerializer):
         model = Resume
         fields = '__all__'
         read_only_fields = ['id', 'parsed_text', 'score', 'uploaded_at']
+    def create(self, validated_data):
+        resume_file = validated_data.get("resume_file")
+        validated_data["actual_resume_file_name"] = resume_file.name
+
+        return super().create(validated_data)
     def validate_job(self, job):
         if not Job.objects.filter(id=job.id).exists():
             raise serializers.ValidationError("Invalid job id.")

@@ -12,40 +12,27 @@ class ResumeUploadView(APIView):
     def post(self, request):
         job_id = request.data.get('job')
         job = get_object_or_404(Job, id=job_id)
-
         files = request.FILES.getlist('resume_file')
 
         if not files:
-            return Response(
-                {"error": "No resume files provided."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "No resume files provided."}, status=status.HTTP_400_BAD_REQUEST)
 
-        created_resumes = []
-
-        # 1️⃣ Save only new resumes
+        results = []
         for file in files:
-            serializer = ResumeSerializer(
-                data={
-                    'job': job.id,
-                    'resume_file': file
-                }
-            )
+            # 1. Save to DB
+            serializer = ResumeSerializer(data={'job': job.id, 'resume_file': file})
             serializer.is_valid(raise_exception=True)
             resume = serializer.save()
-            created_resumes.append(resume)
 
-        # 2️⃣ Process ONLY new ones
-        results = []
-        for resume in created_resumes:
+            # 2. Process only this specific instance
             result = process_and_score_resume(resume, job.description)
             results.append(result)
 
-        # 3️⃣ Rank
+        # 3. Sort the local list (no folder scanning)
         results.sort(key=lambda x: x['score'], reverse=True)
-
+        top_results = results[:5]
         return Response({
             "job_id": job.id,
-            "uploaded_now": len(created_resumes),
-            "rankings": results
+            "uploaded_now": len(results),
+            "rankings": top_results
         }, status=status.HTTP_201_CREATED)
