@@ -15,10 +15,15 @@ class Resume(models.Model):
     )
 
     resume_file = models.FileField(upload_to=resume_upload_path)
+    actual_resume_file_name = models.CharField(max_length=255, blank=True)
+    status = models.CharField(
+    max_length=20,
+    default="PENDING"
+)
+
 
     parsed_text = models.TextField(blank=True)
     score = models.FloatField(null=True, blank=True)
-    actual_resume_file_name = models.CharField(max_length=255, blank=True)
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
 

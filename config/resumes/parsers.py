@@ -93,6 +93,7 @@ def process_and_score_resume(resume, job_description):
 
     resume.parsed_text = text
     resume.score = round(score, 2)
+    resume.status = "Processed"
     resume.save()
 
     return {
