@@ -3,7 +3,7 @@
 ## 📌 Project Overview
 
 Smart Recruitment SaaS is an AI-driven resume screening and candidate shortlisting platform designed to simplify and speed up the hiring process. The system automatically parses resumes, evaluates them against job descriptions, and ranks candidates based on relevance scores.
-
+AWS S3 - for storing resume files.
 This project is **currently under development**, and focuses on building a scalable, backend-heavy recruitment solution with intelligent screening, asynchronous processing, and efficient data handling.
 
 ---
