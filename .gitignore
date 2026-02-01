@@ -208,3 +208,5 @@ __marimo__/
 
 
 /config/media/
+
+frontend/node_modules/

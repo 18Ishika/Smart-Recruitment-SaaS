@@ -1,21 +1,10 @@
-import { useEffect, useState } from "react";
 
-function App() {
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/users/test/")
-      .then(res => res.json())
-      .then(data => setMsg(data.message))
-      .catch(err => console.error(err));
-  }, []);
-
+const App = () => {
   return (
     <div>
-      <h1>React Frontend</h1>
-      <p>{msg}</p>
+      <h1>Hello from react and django</h1>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
