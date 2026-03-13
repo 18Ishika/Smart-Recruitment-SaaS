@@ -14,6 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data.get('email', ''),
             password=validated_data['password'],
-            is_staff=validated_data.get('is_staff', True)
+            is_staff=validated_data.get('is_staff', False)
         )
         return user
