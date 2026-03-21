@@ -1,5 +1,6 @@
+import { useNavigate } from "react-router-dom";
 function Hero() {
-
+  const navigate = useNavigate();
   return (
     <section className="hero">
 
@@ -14,7 +15,7 @@ function Hero() {
           best candidates for your job description.
         </p>
 
-        <button>
+        <button onClick={() => navigate("/signup")}>
           Start Hiring
         </button>
 

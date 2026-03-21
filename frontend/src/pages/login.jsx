@@ -1,62 +1,72 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api/auth";
+import "../styles/login.css";
 
-function Login(){
+function Login() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-const [username,setUsername] = useState("")
-const [password,setPassword] = useState("")
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-const handleLogin = async (e)=>{
+    try {
+      const res = await loginUser({
+        username,
+        password,
+      });
 
-e.preventDefault()
+      console.log(res.data);
+      alert("Login successful");
 
-try{
+      // 👉 redirect after login
+      navigate("/dashboard");
 
-const res = await loginUser({
-username,
-password
-})
+    } catch (err) {
+      console.log(err.response?.data);
+      alert("Invalid credentials");
+    }
+  };
 
-console.log(res.data)
+  return (
+    <div className="login-container">
+      <div className="login-card">
 
-alert("Login successful")
+        <h2>Login</h2>
 
-}catch(err){
+        <form className="login-form" onSubmit={handleLogin}>
 
-console.log(err.response.data)
-alert("Invalid credentials")
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
 
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit">Login</button>
+
+        </form>
+
+        <p className="login-switch">
+          Don’t have an account?{" "}
+          <span onClick={() => navigate("/signup")}>
+            Sign Up
+          </span>
+        </p>
+
+      </div>
+    </div>
+  );
 }
 
-}
-
-return(
-
-<div>
-
-<h2>Login</h2>
-
-<form onSubmit={handleLogin}>
-
-<input
-placeholder="Username"
-onChange={(e)=>setUsername(e.target.value)}
-/>
-
-<input
-type="password"
-placeholder="Password"
-onChange={(e)=>setPassword(e.target.value)}
-/>
-
-<button type="submit">Login</button>
-
-</form>
-
-</div>
-
-)
-
-}
-
-export default Login
+export default Login;
